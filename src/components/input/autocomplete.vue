@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 
-const props = defineProps({
-  source: {
-    type: Array<string>,
-    required: true,
-    default: () => {},
-  },
-  modelValue: String,
-});
+const props = defineProps<{ source: Array<string>; modelValue: string }>();
 
 const emit = defineEmits(["update:modelValue"]);
 
@@ -58,10 +51,7 @@ const handleBlur = () => {
     <ul
       v-show="searcRes.length && isOpen"
       class="absolute w-full flex items-center flex-col">
-      <li
-        v-for="res in searcRes"
-        :key="res"
-        @click="setSelected(res)">
+      <li v-for="res in searcRes" :key="res" @click="setSelected(res)">
         {{ res }}
       </li>
     </ul>
