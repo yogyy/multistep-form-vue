@@ -56,26 +56,18 @@
             class="flex min-h-[70px] rounded-md w-4/5 border border-input bg-transparent px-3 py-2 text-sm shadow-sm hide-scrollbar"></textarea>
         </div>
         <div
-          v-else-if="field.type === 'autocomplete'"
+          v-if="field.type === 'autocomplete'"
           class="flex gap-3 justify-between items-center">
           <label :for="field.label">{{ field.label }}</label>
-          <select
-            :id="field.label"
-            v-model="formData[field.label.toLowerCase()]"
+          <input
+            type="text"
+            list="autocomplete"
+            :placeholder="field.placeholder"
             :required="field.required"
-            class="flex h-9 w-4/5 items-center justify-between whitespace-nowrap rounded-md border border-input bg-[#242424] px-3 py-2 text-sm shadow-sm [&>span]:line-clamp-1">
-            <option
-              hidden
-              disabled
-              value=""
-              selected
-              class="text-opacity-70">
-              {{ field.placeholder }}
-            </option>
-            <option
-              v-for="option in field.options"
-              :key="option"
-              :value="option">
+            v-model="formData[field.label.toLowerCase()]"
+            class="flex h-9 w-4/5 rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium" />
+          <datalist id="autocomplete">
+            <option v-for="option in field.options" :key="option">
               {{ option }}
             </option>
           </select>
