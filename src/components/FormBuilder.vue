@@ -1,14 +1,14 @@
 <template>
   <form
     @submit.prevent="handleSubmit"
-    class="min-w-[30rem] w-full shadow-sm shadow-white rounded-md box-content p-5 relative">
+    class="min-w-[30rem] w-full shadow-sm shadow-white rounded-md box-content p-5">
     <div
       class="space-y-4 flex-1"
       v-for="(step, _i) in steps"
       :key="_i"
       v-show="currentStep === step.step">
       <h2 class="text-3xl font-medium">{{ step.title }}</h2>
-      <p class="text-sm">{{ step.description }}</p>
+      <p class="text-sm italic">{{ step.description }}</p>
       <template v-for="(field, _i) in step.fields" :key="_i">
         <div
           v-if="field.type === 'textfield'"
@@ -65,7 +65,11 @@
         </div>
       </template>
       <div class="flex justify-between">
-        <button type="button" @click="prevStep" :disabled="currentStep === 1">
+        <button
+          type="button"
+          @click="prevStep"
+          :disabled="currentStep === 1"
+          :class="currentStep === 1 ? 'invisible' : 'visible'">
           Previous
         </button>
         <button
@@ -81,49 +85,39 @@
   </form>
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
+import { computed, reactive, ref, toRefs } from "vue";
 import { FormStep } from "../types";
 
-export default {
-  props: {
-    steps: {
-      type: Array<FormStep>,
-      required: true,
-    },
-  },
-  data() {
-    return {
-      currentStep: 1,
-      formData: {} as { [key: string]: any },
-    };
-  },
-  computed: {
-    isCurrentStepValid(): boolean {
-      const currentFields =
-        this.steps.find((step) => step.step === this.currentStep)?.fields || [];
-      return currentFields.every((field) => {
-        return (
-          !field.required || (field.required && this.formData[field.label.toLowerCase()])
-        );
-      });
-    }, // checks if all required fields in the current step are filled
-  },
+const props = defineProps<{ steps: FormStep[] }>();
+const formData = reactive<Record<string, any>>({});
+const currentStep = ref(1);
 
-  methods: {
-    nextStep() {
-      if (this.currentStep < this.steps.length) {
-        this.currentStep++;
-      }
-    },
-    prevStep() {
-      if (this.currentStep > 1) {
-        this.currentStep--;
-      }
-    },
-    handleSubmit() {
-      console.log(this.formData);
-      //   this.formData = {}; //reset form
-    },
-  },
-};
+const { steps } = toRefs(props);
+
+const isCurrentStepValid = computed(() => {
+  const currentFields =
+    steps.value.find(({ step }) => step === currentStep.value)?.fields || [];
+  return currentFields.every((field) => {
+    return !field.required || (field.required && formData[field.label.toLowerCase()]);
+  });
+});
+
+function nextStep() {
+  if (currentStep.value < steps.value.length) {
+    currentStep.value++;
+  }
+}
+function prevStep() {
+  if (currentStep.value > 1) {
+    currentStep.value--;
+  }
+}
+function handleSubmit() {
+  console.log(formData);
+  // currentStep.value = 1;
+  for (const key in formData) {
+    delete formData[key];
+  }
+}
 </script>

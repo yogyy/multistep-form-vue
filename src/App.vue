@@ -1,20 +1,11 @@
 <template>
-  <FormBuilder :steps="dummyData" />
+  <FormBuilder :steps="formSteps" />
 </template>
 
-<script lang="ts">
+<script lang="ts" setup>
 import FormBuilder from "./components/FormBuilder.vue";
 import Dummy from "./lib/response.json";
 import { FormStep } from "./types";
 
-export default {
-  components: {
-    FormBuilder,
-  },
-  data() {
-    return {
-      dummyData: Dummy as FormStep[],
-    };
-  },
-};
+const formSteps = Dummy as FormStep[];
 </script>
